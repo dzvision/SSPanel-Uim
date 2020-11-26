@@ -6,9 +6,7 @@
 //如需换行，直接换行即可，无需换行符
 //【新增/删除】config无需写入迁移附注
 $_ENV['config_migrate_notice'] =
-'enable_geetest_* 已变更为 enable_*_captcha
-crisp已被替换为mylivechat
-telegrma_qrcode被重命名为qrcode
+'新增 enable_change_email 配置項
 ';
 $_ENV['version'] = 2;    //仅当涉及【需要修改config以外的文件】时才需要+1，站长勿动
 
@@ -32,14 +30,15 @@ $_ENV['db_database']  = 'sspanel';           //数据库名
 $_ENV['db_username']  = 'root';              //数据库用户名
 $_ENV['db_password']  = 'sspanel';           //用户名对应的密码
 #高级
-$_ENV['db_charset']   = 'utf8';
-$_ENV['db_collation'] = 'utf8_general_ci';
+$_ENV['db_charset']   = 'utf8mb4';
+$_ENV['db_collation'] = 'utf8mb4_unicode_ci';
 $_ENV['db_prefix']    = '';
 
 
 //邮件设置--------------------------------------------------------------------------------------------
 $_ENV['mailDriver']      = 'none';      //发送邮件方式：none / mailgun / smtp / sendgrid
 $_ENV['sendPageLimit']   = 50;          //发信分页 解决大站发公告超时问题
+$_ENV['email_queue']     = true;        //如题，自动计划任务邮件使用队列 需要每分钟执行 php xcat Job SendMail
 
 # mailgun
 $_ENV['mailgun_key']     = '';
@@ -110,6 +109,7 @@ $_ENV['class_expire_reset_traffic'] = 0;            //等级到期时重置为�
 $_ENV['account_expire_delete_days'] = -1;           //账户到期几天之后会删除账户，小于0时不删除
 
 $_ENV['enable_kill']                = true;         //是否允许用户注销账户
+$_ENV['enable_change_email']        = true;         //是否允许用户更改賬戶郵箱
 
 #用户流量余量不足邮件提醒
 $_ENV['notify_limit_mode']          = true;         //false为关闭，per为按照百分比提醒，mb为按照固定剩余流量提醒
@@ -241,9 +241,10 @@ $_ENV['telegram_general_terms']             = '服务条款.';                  
 
 
 //沟通设置--------------------------------------------------------------------------------------------
-#客服系统设置，注册地址 https://www.mylivechat.com
-$_ENV['enable_mylivechat']    = false;   //是否开启客服系统
-$_ENV['mylivechat_id']        = '';      //客服系统ID
+$_ENV['live_chat']            = 'none';   //是否开启客服系统 none  crisp  mylivechat
+$_ENV['mylivechat_id']        = '';      //客服系统ID，注册地址 https://www.mylivechat.com
+$_ENV['crisp_id']             = '';      //客服系统ID，注册地址 https://crisp.chat/en/
+$_ENV['tawk_id']              = '';      //客服系统ID，注册地址 https://tawk.to/
 
 # PushBear  基于微信模板的向关注了二维码的用户以微信方式推送消息 https://pushbear.ftqq.com/，目前仅用户推送新公告
 $_ENV['usePushBear']          = false;
@@ -279,7 +280,7 @@ $_ENV['enable_checkin_captcha'] = false;        //启用签到验证码
 
 
 //支付系统设置----------------------------------------------------------------------------------------
-#取值 none | codepay | f2fpay | chenAlipay | paymentwall | spay |tomatopay | payjs | yftpay
+#取值 none | codepay | f2fpay | chenAlipay | paymentwall | spay | payjs | yftpay
 $_ENV['payment_system']       = 'none';
 
 #yft支付设置
@@ -322,21 +323,6 @@ $_ENV['bitpay_secret']        = '';
 #PayJs
 $_ENV['payjs_mchid']          = '';
 $_ENV['payjs_key']            = '';
-
-#tomatopay番茄云支付
-#使用教程:https://swapidc.fanqieui.com/?t/329.html  tg群 https://t.me/fanqiepay
-$_ENV['tomatopay'] = [
-    'wxpay'  => [
-        'mchid'               => '',    // 商户号
-        'account'             => '',    //您在番茄云支付的登录邮箱
-        'token'               => ''     // 安全验证码
-    ],
-    'alipay' => [
-        'mchid'               => '',    // 商户号
-        'account'             => '',    //您在番茄云支付的登录邮箱
-        'token'               => ''     // 安全验证码
-    ],
-];
 
 
 //其他面板显示设置------------------------------------------------------------------------------------------
@@ -441,7 +427,7 @@ $_ENV['userCenterClient']     = [
 
 
 //新旧首页设置--------------------------------------------------------------------------------------------
-$_ENV['newIndex'] = true;	//使用新的 Node.js 开发的首页请填写 true，其他值为使用先前的首页，如您使用其他主题请保持 true
+$_ENV['newIndex'] = false;	//使用新的 Node.js 开发的首页请填写 true，其他值为使用先前的首页，如您使用其他主题请保持 true
 
 
 //节点检测-----------------------------------------------------------------------------------------------
@@ -538,3 +524,6 @@ foreach ($_ENV['cdn_forwarded_ip'] as $cdn_forwarded_ip) {
         break;
     }
 }
+
+// https://sentry.io for production debugging
+$_ENV['sentry_dsn'] = '';
